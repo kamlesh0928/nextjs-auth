@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { toast } from "react-hot-toast";
+import { toast, Toaster } from "react-hot-toast";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -17,20 +17,18 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
 
   const onSignup = async () => {
-  try {
-    setLoading(true);
-    console.log("Sending user data:", user);
-    const response = await axios.post("/api/users/signup", user);
-    console.log("Response data", response.data);
-    router.push("/login");
-    toast.success("Account created");
-  } catch (error: any) {
-    console.log("Error occurred during signup:", error);
-    toast.error(error.message);
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      setLoading(true);
+      const response = await axios.post("/api/users/signup", user);
+      toast.success("Account created successfully!");
+      router.push("/login");
+    } catch (error: any) {
+      console.log("Error occurred during signup:", error);
+      toast.error(error.message || "Failed to create account");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (
@@ -51,7 +49,7 @@ export default function SignupPage() {
           Create Your Account
         </h1>
 
-        <form className="space-y-6">
+        <div className="space-y-6">
           <div>
             <label
               htmlFor="username"
@@ -110,7 +108,7 @@ export default function SignupPage() {
 
           <div>
             <button
-              type="submit"
+              type="button"
               onClick={onSignup}
               className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors duration-200"
               disabled={buttonDisabled}
@@ -128,8 +126,9 @@ export default function SignupPage() {
               Log In
             </Link>
           </div>
-        </form>
+        </div>
       </div>
+      <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
     </div>
   );
 }
