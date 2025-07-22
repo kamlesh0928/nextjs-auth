@@ -21,7 +21,7 @@ export default function SignupPage() {
       setLoading(true);
       const response = await axios.post("/api/users/signup", user);
       toast.success("Account created successfully!");
-      router.push("/login");
+      router.push("/profile");
     } catch (error: any) {
       console.log("Error occurred during signup:", error);
       toast.error(error.message || "Failed to create account");
