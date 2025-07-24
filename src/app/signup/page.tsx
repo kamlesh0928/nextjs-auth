@@ -20,8 +20,8 @@ export default function SignupPage() {
     try {
       setLoading(true);
       const response = await axios.post("/api/users/signup", user);
-      toast.success("Account created successfully!");
-      router.push("/profile");
+      toast.success("Account created successfully. Please verify your email.");
+      router.push("/login");
     } catch (error: any) {
       console.log("Error occurred during signup:", error);
       toast.error(error.message || "Failed to create account");
@@ -113,7 +113,7 @@ export default function SignupPage() {
               className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors duration-200"
               disabled={buttonDisabled}
             >
-              {loading ? "Signing" : "Sign Up"}
+              {loading ? "Signing..." : "Sign Up"}
             </button>
           </div>
 

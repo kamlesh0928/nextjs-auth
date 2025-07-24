@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -8,62 +7,62 @@ import { toast, Toaster } from "react-hot-toast";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [user, setUser] = useState({
-    email: "",
-    password: "",
-  });
+  const [token, setToken] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [isPasswordMatch, setIsPasswordMatch] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  const onLogin = async () => {
+  const onSubmit = async () => {
+    if (!isPasswordMatch) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
     try {
       setLoading(true);
-      const response = await axios.post("/api/users/login", user);
-      toast.success("Login successfully");
-      router.push("/profile");
+      await axios.post("/api/users/reset-password", {
+        password,
+        token,
+      });
+      toast.success("Password reset successfully");
+      router.push("/login");
     } catch (error: any) {
-      console.log("Error occurred during login:", error);
-      toast.error(error.message || "Failed to login");
+      console.log("Error occurred during resetting password:", error);
+      toast.error(error.message || "Failed to reset password");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (user.email.length > 0 && user.password.length > 0) {
+    const urlParams = window.location.search.split("=")[1];
+    setToken(urlParams || "");
+  }, []);
+
+  useEffect(() => {
+    if (password.length > 0 && confirmPassword.length > 0) {
       setButtonDisabled(false);
     } else {
       setButtonDisabled(true);
     }
-  });
+
+    if (password === confirmPassword) {
+      setIsPasswordMatch(true);
+    } else {
+      setIsPasswordMatch(false);
+    }
+  }, [password, confirmPassword]);
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-900">
       <div className="w-full max-w-md bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700">
         <h1 className="mb-8 text-3xl font-bold text-center text-white">
-          Login
+          Reset Password
         </h1>
 
         <div className="space-y-6">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-200 mb-1"
-            >
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={user.email}
-              className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 transition-colors"
-              onChange={(e) => setUser({ ...user, email: e.target.value })}
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-
           <div>
             <label
               htmlFor="password"
@@ -75,42 +74,42 @@ export default function LoginPage() {
               id="password"
               name="password"
               type="password"
-              value={user.password}
+              value={password}
               className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 transition-colors"
-              onChange={(e) => setUser({ ...user, password: e.target.value })}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
             />
           </div>
 
           <div>
-            <Link
-              href="/forgot-password"
-              className="text-sm text-blue-400 hover:underline"
+            <label
+              htmlFor="confirm-password"
+              className="block text-sm font-medium text-gray-200 mb-1"
             >
-              Forgot Password?
-            </Link>
+              Confirm Password
+            </label>
+            <input
+              id="confirm-password"
+              name="confirm-password"
+              type="password"
+              value={confirmPassword}
+              className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 transition-colors"
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Enter your password"
+              required
+            />
           </div>
 
           <div>
             <button
               type="submit"
-              onClick={onLogin}
+              onClick={onSubmit}
               className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors duration-200"
-              disabled={buttonDisabled}
+              disabled={buttonDisabled && isPasswordMatch}
             >
-              {loading ? "logging..." : "Login"}
+              {loading ? "Resetting..." : "Reset Password"}
             </button>
-          </div>
-
-          <div className="text-center text-sm  text-gray-400">
-            Do not have account?{" "}
-            <Link
-              href="/signup"
-              className="text-blue-400 hove:underline font-medium"
-            >
-              Signup
-            </Link>
           </div>
         </div>
       </div>
