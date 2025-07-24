@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
-  const isPublicPath = path === "/login" || path === "/signup" || path === "/verify-email";
+  const isPublicPath = path === "/login" || path === "/signup" || path === "/verify-email" || path === "/forgot-password" || path === "/reset-password";
   const token = request.cookies.get("token")?.value || "";
 
   if (isPublicPath && token) {
@@ -15,5 +15,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/profile/:id", "/login", "/signup", "/verify-email"],
+  matcher: ["/profile/:id", "/login", "/signup", "/verify-email", "/forgot-password", "/reset-password"],
 };
